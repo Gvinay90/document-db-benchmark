@@ -109,6 +109,31 @@ Main settings are in `src/main/resources/application.properties`:
 | `POST` | `/insertData` | Upload JSON file (multipart) for bulk insert |
 | `POST` | `/insertDataParallel` | Same as above using parallel insert path |
 
+## Generate sample data
+
+`scripts/generate_demo_data.py` writes a JSON **array** of `Demo` objects (`id`, `name`, `value`) for bulk upload to `/insertData` or `/insertDataParallel`.
+
+From the repository root (requires Python 3):
+
+```bash
+python3 scripts/generate_demo_data.py -n 50000 -o data/benchmark/demo-50k.json
+```
+
+Useful options:
+
+- `--id-start 1` — first `id` (default `1`)
+- `--seed 42` — reproducible random `value` fields
+- `--name-prefix item` — names become `item-<id>`
+- `--pretty` — indented JSON (larger files)
+
+Example upload (app on localhost:8080):
+
+```bash
+curl -s -F "file=@data/benchmark/demo-50k.json" http://localhost:8080/insertDataParallel
+```
+
+Generated files under `data/benchmark/` are gitignored by default.
+
 ## Optional: Prometheus and Grafana
 
 Under `ConfFiles/` there is a sample `prometheus.yml` (scrapes `actuator/prometheus`) and a `compose.yml` intended for Prometheus/Grafana. Those files may reference paths on the author’s machine; adjust volume mounts and scrape targets (for example `host.docker.internal:8080` on macOS) before using them.
