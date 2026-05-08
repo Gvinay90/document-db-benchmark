@@ -3,6 +3,9 @@ target/
 
 # Generated benchmark payloads (see scripts/generate_demo_data.py)
 data/benchmark/
+
+# Local scratch (e.g. large JSON); obsolete folder — safe to delete after moving data
+ConfFiles/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

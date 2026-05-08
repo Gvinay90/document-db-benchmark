@@ -166,6 +166,6 @@ docker run --rm -p 9090:9090 \
 
 Then open Grafana separately or add Prometheus as a datasource in an existing Grafana instance pointing at `http://localhost:9090`.
 
-### Legacy samples
+### Optional Mongo host dashboard
 
-Under **`ConfFiles/`** there is an older `prometheus.yml` / `compose.yml` with machine-specific paths; prefer **`observability/`** and the root **`docker-compose.yml`**.
+A Percona-style MongoDB Grafana export is kept for manual import only: **`observability/grafana/dashboards/import-optional/`** (see the README there). It is separate from the bundled **document-db-benchmark** dashboard, which shows JVM and application metrics.
