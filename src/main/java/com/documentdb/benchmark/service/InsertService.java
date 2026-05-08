@@ -1,4 +1,4 @@
-package com.PerformanceTest.PerformanceTest.service;
+package com.documentdb.benchmark.service;
 
 import java.io.IOException;
 import java.util.List;
@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.PerformanceTest.PerformanceTest.model.Demo;
-import com.PerformanceTest.PerformanceTest.repository.DemoRepo;
+import com.documentdb.benchmark.model.Demo;
+import com.documentdb.benchmark.repository.DemoRepo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

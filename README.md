@@ -1,6 +1,8 @@
-# PerformanceTest
+# document-db-benchmark
 
 Spring Boot application for experimenting with document database performance (MongoDB), bulk JSON ingest, and Prometheus metrics via Spring Boot Actuator.
+
+Academic write-up: **`document-db-benchmark.pdf`** (performance evaluation of document databases).
 
 ## Prerequisites
 

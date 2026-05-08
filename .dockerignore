@@ -1,0 +1,12 @@
+target/
+.git
+.gitignore
+.idea
+*.iml
+.vscode
+**/.DS_Store
+document-db-benchmark.pdf
+Big_Data_Project.pdf
+README.md
+HELP.md
+ConfFiles/

@@ -1,4 +1,4 @@
-package com.PerformanceTest.PerformanceTest.controller;
+package com.documentdb.benchmark.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.PerformanceTest.PerformanceTest.model.Demo;
-import com.PerformanceTest.PerformanceTest.repository.DemoRepo;
-import com.PerformanceTest.PerformanceTest.service.InsertService;
+import com.documentdb.benchmark.model.Demo;
+import com.documentdb.benchmark.repository.DemoRepo;
+import com.documentdb.benchmark.service.InsertService;
 
 @RestController
 public class DemoController {
