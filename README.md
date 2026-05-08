@@ -6,11 +6,41 @@ Academic write-up: **`document-db-benchmark.pdf`** (performance evaluation of do
 
 ## Prerequisites
 
-- **Java**: JDK 8 or newer (the project targets Java 8; it also runs on newer LTS versions such as 17).
-- **MongoDB**: Running locally on **host** `localhost` and **port** `27017`, database name `DemoData` (see `src/main/resources/application.properties`).
-- **Maven**: Not required if you use the included wrapper (`mvnw`).
+- **Java** & **Maven**: Only needed for local development without Docker (see below).
+- **Docker** (optional): Recommended one-command setup via `docker compose` (builds the app image and starts MongoDB).
 
-## Start MongoDB
+Local (non-Docker) runs expect **MongoDB** on **localhost:27017**, database `DemoData` (see `src/main/resources/application.properties`).
+
+## Run with Docker (recommended)
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+- **API & Actuator**: [http://localhost:8080](http://localhost:8080) — e.g. `curl -s http://localhost:8080/actuator/health`
+- **MongoDB** runs only on the Compose network (not published to the host by default) so it does not conflict with an existing local MongoDB on port 27017. To expose Mongo on the host, add under the `mongodb` service in `docker-compose.yml`: `ports: ["27017:27017"]`.
+
+Stop and remove containers:
+
+```bash
+docker compose down
+```
+
+To remove the named volume (Mongo data) as well:
+
+```bash
+docker compose down -v
+```
+
+Build the application image only:
+
+```bash
+docker build -t document-db-benchmark:local .
+```
+
+## Start MongoDB (local dev without Compose)
 
 If you do not already have MongoDB listening on `localhost:27017`, you can run it with Docker:
 
@@ -43,6 +73,14 @@ The app listens on **port 8080** by default.
 - List stored documents: `curl -s http://localhost:8080/`
 
 With MongoDB up, health should report `"status":"UP"` and `"mongo":{"status":"UP",...}`.
+
+### Troubleshooting (local `spring-boot:run`)
+
+**`Port 8080 was already in use`**  
+Something else is bound to 8080—often the same app running under **`docker compose`**. Stop it: `docker compose down`. Or see what is using the port: `lsof -nP -iTCP:8080 -sTCP:LISTEN`. To run locally on another port: `SERVER_PORT=8081 bash mvnw spring-boot:run`.
+
+**`Connection refused` to `localhost:27017` (MongoDB)**  
+The JVM is trying to reach Mongo on your **host**, but nothing is listening. Start Mongo (see [Start MongoDB](#start-mongodb-local-dev-without-compose) above). If you only started **`docker compose`**, Mongo is **not** published to the host unless you added `ports: ["27017:27017"]` under `mongodb`, so `spring-boot:run` on the host still cannot see it—either map that port or run the app **inside** Compose instead of locally.
 
 ## Build and tests
 

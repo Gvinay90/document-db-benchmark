@@ -1,0 +1,31 @@
+services:
+  mongodb:
+    image: mongo:6
+    container_name: document-db-benchmark-mongo
+    # MongoDB is only on the Docker network (no host port) to avoid clashing with a local mongod.
+    # To expose it: add under this service → ports: ["27017:27017"]
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  app:
+    build: .
+    image: document-db-benchmark:local
+    container_name: document-db-benchmark-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongodb
+      SPRING_DATA_MONGODB_PORT: "27017"
+      SPRING_DATA_MONGODB_DATABASE: DemoData
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+volumes:
+  mongodb_data:
