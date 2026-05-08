@@ -1,0 +1,16 @@
+# Use when Prometheus runs in Docker but Spring Boot runs on the host (e.g. mvnw).
+# Start: docker run --rm -p 9090:9090 -v "$(pwd)/observability/prometheus/prometheus-host.yml:/etc/prometheus/prometheus.yml:ro" prom/prometheus:v2.52.0
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: spring-boot-host
+    metrics_path: /actuator/prometheus
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["host.docker.internal:8080"]

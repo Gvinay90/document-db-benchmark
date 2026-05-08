@@ -20,6 +20,8 @@ docker compose up --build
 ```
 
 - **API & Actuator**: [http://localhost:8080](http://localhost:8080) — e.g. `curl -s http://localhost:8080/actuator/health`
+- **Prometheus**: [http://localhost:9090](http://localhost:9090) — targets and raw metrics (job `spring-boot` → `app:8080`)
+- **Grafana**: [http://localhost:3000](http://localhost:3000) — login **`admin` / `admin`** (change after first login in dev only); dashboard **document-db-benchmark** is auto-loaded
 - **MongoDB** runs only on the Compose network (not published to the host by default) so it does not conflict with an existing local MongoDB on port 27017. To expose Mongo on the host, add under the `mongodb` service in `docker-compose.yml`: `ports: ["27017:27017"]`.
 
 Stop and remove containers:
@@ -134,6 +136,36 @@ curl -s -F "file=@data/benchmark/demo-50k.json" http://localhost:8080/insertData
 
 Generated files under `data/benchmark/` are gitignored by default.
 
-## Optional: Prometheus and Grafana
+## Observability (graphs)
 
-Under `ConfFiles/` there is a sample `prometheus.yml` (scrapes `actuator/prometheus`) and a `compose.yml` intended for Prometheus/Grafana. Those files may reference paths on the author’s machine; adjust volume mounts and scrape targets (for example `host.docker.internal:8080` on macOS) before using them.
+The default **`docker compose`** stack includes **Prometheus** and **Grafana** alongside the app and MongoDB.
+
+| Service     | URL                     | Notes |
+|------------|-------------------------|--------|
+| Grafana    | http://localhost:3000   | User **`admin`**, password **`admin`**. Open **Dashboards → document-db-benchmark** for HTTP, JVM heap, CPU, and bulk-insert Micrometer panels. |
+| Prometheus | http://localhost:9090 | **Status → Targets** should show `spring-boot` as **UP** once the app is healthy. **Graph** tab for ad-hoc PromQL. |
+| Metrics    | http://localhost:8080/actuator/prometheus | Raw scrape endpoint (used by Prometheus). |
+
+Configs live under **`observability/`**:
+
+- `observability/prometheus/prometheus.yml` — scrapes `app:8080` inside Compose
+- `observability/grafana/provisioning/` — Prometheus datasource + file-based dashboards
+- `observability/grafana/dashboards/document-db-benchmark.json` — starter graphs (request rate by URI, heap, CPU, insert timer / failed counter)
+
+After bringing the stack up, generate load (for example upload data with `curl` to `/insertDataParallel`) and use the time picker in Grafana (**Last 15 minutes**) to see changes.
+
+### Prometheus only, app on the host
+
+If you run **`bash mvnw spring-boot:run`** on the machine and want Prometheus in Docker with graphs against **localhost:8080**, use the alternate config (macOS/Windows Docker Desktop: `host.docker.internal`):
+
+```bash
+docker run --rm -p 9090:9090 \
+  -v "$(pwd)/observability/prometheus/prometheus-host.yml:/etc/prometheus/prometheus.yml:ro" \
+  prom/prometheus:v2.52.0
+```
+
+Then open Grafana separately or add Prometheus as a datasource in an existing Grafana instance pointing at `http://localhost:9090`.
+
+### Legacy samples
+
+Under **`ConfFiles/`** there is an older `prometheus.yml` / `compose.yml` with machine-specific paths; prefer **`observability/`** and the root **`docker-compose.yml`**.
